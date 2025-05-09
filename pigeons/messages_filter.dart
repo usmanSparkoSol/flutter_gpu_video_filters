@@ -9,7 +9,9 @@ import 'package:pigeon/pigeon.dart';
     dartOut: 'lib/src/messages/filter_messages.g.dart',
     kotlinOut:
         'android/src/main/kotlin/nd/flutter/plugins/gpu_video_filters/FilterMessages.g.kt',
-    kotlinOptions: KotlinOptions(package: 'nd.flutter.plugins.gpu_video_filters'),
+    kotlinOptions: KotlinOptions(
+      package: 'nd.flutter.plugins.gpu_video_filters',
+    ),
     copyrightHeader: 'pigeons/copyright.txt',
   ),
 )
@@ -62,5 +64,16 @@ abstract class VideoPreviewApi {
 
   void pause(int textureId, bool embedded);
 
+  int getDuration(int textureId, bool embedded);
+
+  int getCurrentPosition(int textureId, bool embedded);
+
+  // void setPlayerCallback(int textureId, bool embedded);
+
   void dispose(int textureId, bool embedded);
 }
+
+// @FlutterApi()
+// abstract class VideoCallback {
+//   void onPlayerStateChanged(int state);
+// }

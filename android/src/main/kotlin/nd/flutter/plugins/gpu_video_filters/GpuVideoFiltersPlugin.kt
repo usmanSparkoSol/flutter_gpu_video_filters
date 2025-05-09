@@ -96,12 +96,17 @@ class VideoTexture(val texture: TextureRegistry.SurfaceTextureEntry, context: Co
     }
 }
 
+interface PlayerEventCallback {
+    fun onPlayerStateChanged(state: Int)
+}
+
 class VideoPreviewApiImpl(
     private val binding: FlutterPluginBinding,
     private val videoFilters: VideoFilterApiImpl
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE), VideoPreviewApi {
     private var videosSources = LongSparseArray<VideoTexture>()
     private var videosPreviews = LongSparseArray<BaseVideoPreview>()
+//    lateinit var dartCallback: VideoCallback
 
     @UnstableApi
     override fun create(): Long {
@@ -184,6 +189,32 @@ class VideoPreviewApiImpl(
     }
 
     @UnstableApi
+    override fun getCurrentPosition(textureId: Long, embedded: Boolean): Long {
+        if (!embedded) {
+            val videoSource = videosSources[textureId]
+            return videoSource.player.getCurrentPosition()
+        }
+        if (embedded) {
+            val videoPreview = videosPreviews[textureId]
+            return videoPreview.player.getCurrentPosition()
+        }
+        return 0
+    }
+
+    @UnstableApi
+    override fun getDuration(textureId: Long, embedded: Boolean): Long {
+        if (!embedded) {
+            val videoSource = videosSources[textureId]
+            return videoSource.player.getDuration()
+        }
+        if (embedded) {
+            val videoPreview = videosPreviews[textureId]
+            return videoPreview.player.getDuration()
+        }
+        return 0
+    }
+
+    @UnstableApi
     override fun pause(textureId: Long, embedded: Boolean) {
         if (!embedded) {
             val videoSource = videosSources[textureId]
@@ -194,6 +225,29 @@ class VideoPreviewApiImpl(
             videoPreview.player.pause()
         }
     }
+
+//    fun setCallback(callback: VideoCallback) {
+//        dartCallback = callback
+//    }
+//
+//    override fun setPlayerCallback(textureId: Long, embedded: Boolean) {
+//        if (!embedded) {
+//            val videoSource = videosSources[textureId]
+//            addPlayerListener(videoSource.player, object : PlayerEventCallback {
+//                override fun onPlayerStateChanged(state: Int) {
+//                    dartCallback.onPlayerStateChanged(state)
+//                }
+//            })
+//        }
+//        if (embedded) {
+//            val videoPreview = videosPreviews[textureId]
+//            addPlayerListener(videoPreview.player, object : PlayerEventCallback {
+//                override fun onPlayerStateChanged(state: Int) {
+//                    dartCallback.onPlayerStateChanged(state)
+//                }
+//            })
+//        }
+//    }
 
     @UnstableApi
     override fun dispose(textureId: Long, embedded: Boolean) {
@@ -240,6 +294,8 @@ class VideoPreviewApiImpl(
         videosPreviews.put(viewId.toLong(), preview)
         return preview
     }
+
+
 }
 
 interface BaseVideoPreview : PlatformView, OnUniformsUpdater, Player.Listener {
