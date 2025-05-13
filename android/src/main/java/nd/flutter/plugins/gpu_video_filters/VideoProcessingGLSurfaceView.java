@@ -262,6 +262,7 @@ public final class VideoProcessingGLSurfaceView extends GLSurfaceView {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+      System.out.println("calling onSurfaceChanged");
       GLES20.glViewport(0, 0, width, height);
       this.width = width;
       this.height = height;
